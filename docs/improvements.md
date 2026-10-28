@@ -9,13 +9,14 @@ This file is used to record ideas, discussions, and planned improvements for the
 - Basic grocery list is working
 - Users can add, check, and delete items
 - APK builds automatically via GitHub Actions
+- **List is now saved permanently** (using shared_preferences)
 
 ---
 
 ## Planned Improvements
 
 ### High Priority
-- [ ] Save the list permanently (so it doesn't reset when the app is closed)
+- [x] Save the list permanently (so it doesn't reset when the app is closed)
 - [ ] Add quantity (example: 2x Milk, 1kg Rice)
 
 ### Medium Priority
@@ -32,6 +33,11 @@ This file is used to record ideas, discussions, and planned improvements for the
 ---
 
 ## Discussion Log
+
+### 2026-10-28
+- Implemented permanent list saving using `shared_preferences`.
+- List now survives app restarts and phone reboots.
+- Next suggested focus: Add quantity support.
 
 ### 2026-10-24
 - App is running well on phone.
