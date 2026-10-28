@@ -36,7 +36,8 @@ class GroceryHomePage extends StatefulWidget {
 
 class _GroceryHomePageState extends State<GroceryHomePage> {
   final List<GroceryItem> _items = [];
-  final TextEditingController _controller = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _quantityController = TextEditingController();
   bool _isLoading = true;
 
   static const String _storageKey = 'grocery_items';
@@ -76,12 +77,16 @@ class _GroceryHomePageState extends State<GroceryHomePage> {
   }
 
   void _addItem() {
-    final text = _controller.text.trim();
-    if (text.isEmpty) return;
+    final name = _nameController.text.trim();
+    if (name.isEmpty) return;
+
+    final quantityText = _quantityController.text.trim();
+    final quantity = quantityText.isEmpty ? '1' : quantityText;
 
     setState(() {
-      _items.add(GroceryItem(name: text));
-      _controller.clear();
+      _items.add(GroceryItem(name: name, quantity: quantity));
+      _nameController.clear();
+      _quantityController.clear();
     });
     _saveItems();
   }
@@ -102,7 +107,8 @@ class _GroceryHomePageState extends State<GroceryHomePage> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _nameController.dispose();
+    _quantityController.dispose();
     super.dispose();
   }
 
@@ -120,24 +126,45 @@ class _GroceryHomePageState extends State<GroceryHomePage> {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Row(
+                  child: Column(
                     children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _controller,
-                          decoration: const InputDecoration(
-                            hintText: 'Add grocery item...',
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.shopping_cart),
-                          ),
-                          onSubmitted: (_) => _addItem(),
+                      TextField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                          hintText: 'Item name (e.g. Milk)',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.shopping_cart),
                         ),
+                        onSubmitted: (_) => _addItem(),
                       ),
-                      const SizedBox(width: 12),
-                      FilledButton.icon(
-                        onPressed: _addItem,
-                        icon: const Icon(Icons.add),
-                        label: const Text('Add'),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: TextField(
+                              controller: _quantityController,
+                              decoration: const InputDecoration(
+                                hintText: 'Qty (e.g. 2, 1kg)',
+                                border: OutlineInputBorder(),
+                                prefixIcon: Icon(Icons.numbers),
+                              ),
+                              onSubmitted: (_) => _addItem(),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            flex: 1,
+                            child: FilledButton.icon(
+                              onPressed: _addItem,
+                              icon: const Icon(Icons.add),
+                              label: const Text('Add'),
+                              style: FilledButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -205,6 +232,14 @@ class _GroceryHomePageState extends State<GroceryHomePage> {
                                       color: item.isBought ? Colors.grey : null,
                                     ),
                                   ),
+                                  subtitle: Text(
+                                    'Qty: ${item.quantity}',
+                                    style: TextStyle(
+                                      color: item.isBought
+                                          ? Colors.grey
+                                          : Colors.black54,
+                                    ),
+                                  ),
                                   trailing: IconButton(
                                     icon: const Icon(
                                       Icons.delete_outline,
@@ -226,16 +261,19 @@ class _GroceryHomePageState extends State<GroceryHomePage> {
 
 class GroceryItem {
   final String name;
+  final String quantity;
   bool isBought;
 
   GroceryItem({
     required this.name,
+    this.quantity = '1',
     this.isBought = false,
   });
 
   Map<String, dynamic> toJson() {
     return {
       'name': name,
+      'quantity': quantity,
       'isBought': isBought,
     };
   }
@@ -243,6 +281,7 @@ class GroceryItem {
   factory GroceryItem.fromJson(Map<String, dynamic> json) {
     return GroceryItem(
       name: json['name'] as String,
+      quantity: json['quantity'] as String? ?? '1',
       isBought: json['isBought'] as bool? ?? false,
     );
   }
