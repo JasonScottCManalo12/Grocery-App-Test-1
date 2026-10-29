@@ -10,7 +10,8 @@ This file is used to record ideas, discussions, and planned improvements for the
 - Users can add, check, and delete items
 - APK builds automatically via GitHub Actions
 - List is saved permanently (using shared_preferences)
-- **Quantity support added** (e.g. 2, 1kg, 500g)
+- Quantity support added (e.g. 2, 1kg, 500g)
+- **Category dropdown added**
 
 ---
 
@@ -19,9 +20,9 @@ This file is used to record ideas, discussions, and planned improvements for the
 ### High Priority
 - [x] Save the list permanently (so it doesn't reset when the app is closed)
 - [x] Add quantity (example: 2x Milk, 1kg Rice)
+- [x] Add categories (Fruits, Dairy, Snacks, Household, etc.)
 
 ### Medium Priority
-- [ ] Add categories (Fruits, Dairy, Snacks, Household, etc.)
 - [ ] Dark mode support
 - [ ] Better empty state / animations
 
@@ -35,12 +36,17 @@ This file is used to record ideas, discussions, and planned improvements for the
 
 ## Discussion Log
 
+### 2026-10-29
+- Added category dropdown.
+- Categories: Fruits, Vegetables, Dairy, Meat & Fish, Bakery, Snacks, Beverages, Household, Personal Care, Other.
+- Category is shown next to quantity on each item.
+- Next suggested focus: Dark mode or sorting by category.
+
 ### 2026-10-28 (evening)
 - Added quantity support.
 - Users can now enter a quantity (e.g. 2, 1kg, 500g) when adding an item.
 - Quantity is shown under each item name.
 - Defaults to "1" if left empty.
-- Next suggested focus: Categories.
 
 ### 2026-10-28
 - Implemented permanent list saving using `shared_preferences`.

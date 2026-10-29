@@ -40,6 +40,21 @@ class _GroceryHomePageState extends State<GroceryHomePage> {
   final TextEditingController _quantityController = TextEditingController();
   bool _isLoading = true;
 
+  static const List<String> _categories = [
+    'Fruits',
+    'Vegetables',
+    'Dairy',
+    'Meat & Fish',
+    'Bakery',
+    'Snacks',
+    'Beverages',
+    'Household',
+    'Personal Care',
+    'Other',
+  ];
+
+  String _selectedCategory = 'Other';
+
   static const String _storageKey = 'grocery_items';
 
   @override
@@ -84,9 +99,14 @@ class _GroceryHomePageState extends State<GroceryHomePage> {
     final quantity = quantityText.isEmpty ? '1' : quantityText;
 
     setState(() {
-      _items.add(GroceryItem(name: name, quantity: quantity));
+      _items.add(GroceryItem(
+        name: name,
+        quantity: quantity,
+        category: _selectedCategory,
+      ));
       _nameController.clear();
       _quantityController.clear();
+      _selectedCategory = 'Other';
     });
     _saveItems();
   }
@@ -141,7 +161,6 @@ class _GroceryHomePageState extends State<GroceryHomePage> {
                       Row(
                         children: [
                           Expanded(
-                            flex: 2,
                             child: TextField(
                               controller: _quantityController,
                               decoration: const InputDecoration(
@@ -154,17 +173,46 @@ class _GroceryHomePageState extends State<GroceryHomePage> {
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            flex: 1,
-                            child: FilledButton.icon(
-                              onPressed: _addItem,
-                              icon: const Icon(Icons.add),
-                              label: const Text('Add'),
-                              style: FilledButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 16),
+                            child: DropdownButtonFormField<String>(
+                              value: _selectedCategory,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 16,
+                                ),
                               ),
+                              items: _categories.map((String category) {
+                                return DropdownMenuItem<String>(
+                                  value: category,
+                                  child: Text(
+                                    category,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                if (newValue != null) {
+                                  setState(() {
+                                    _selectedCategory = newValue;
+                                  });
+                                }
+                              },
                             ),
                           ),
                         ],
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.icon(
+                          onPressed: _addItem,
+                          icon: const Icon(Icons.add),
+                          label: const Text('Add Item'),
+                          style: FilledButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -233,7 +281,7 @@ class _GroceryHomePageState extends State<GroceryHomePage> {
                                     ),
                                   ),
                                   subtitle: Text(
-                                    'Qty: ${item.quantity}',
+                                    'Qty: ${item.quantity}  ·  ${item.category}',
                                     style: TextStyle(
                                       color: item.isBought
                                           ? Colors.grey
@@ -262,11 +310,13 @@ class _GroceryHomePageState extends State<GroceryHomePage> {
 class GroceryItem {
   final String name;
   final String quantity;
+  final String category;
   bool isBought;
 
   GroceryItem({
     required this.name,
     this.quantity = '1',
+    this.category = 'Other',
     this.isBought = false,
   });
 
@@ -274,6 +324,7 @@ class GroceryItem {
     return {
       'name': name,
       'quantity': quantity,
+      'category': category,
       'isBought': isBought,
     };
   }
@@ -282,6 +333,7 @@ class GroceryItem {
     return GroceryItem(
       name: json['name'] as String,
       quantity: json['quantity'] as String? ?? '1',
+      category: json['category'] as String? ?? 'Other',
       isBought: json['isBought'] as bool? ?? false,
     );
   }
